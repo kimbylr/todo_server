@@ -4,14 +4,15 @@ const mapTodo = todo => {
 };
 
 const mapContext = context => {
-  updated = context.todos
-    .map(todo => Date.parse(todo.updatedAt))
-    .sort((a, b) => b - a);
+  const { label, archived, todos, _id: id, updatedAt } = context;
 
-  const { label, archived, todos, _id: id } = context;
-  const updatedAt = updated[0] || 0;
-  const todosWithId = todos.map(mapTodo);
-  return { label, archived, todos: todosWithId, id, updatedAt };
+  return {
+    label,
+    archived,
+    id,
+    todos: todos.map(mapTodo),
+    updatedAt: Date.parse(updatedAt),
+  };
 };
 
 module.exports = { mapContext, mapTodo };

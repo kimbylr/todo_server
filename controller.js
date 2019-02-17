@@ -73,6 +73,7 @@ router.put('/:contextId', (req, res, next) => {
 
   const newContext = req.context;
   newContext.label = req.body.label;
+  newContext.updatedAt = new Date();
   newContext.save(error => {
     if (error) console.error('could not save: ' + error);
     res.json(mapContext(newContext));
@@ -113,7 +114,7 @@ router.put('/:contextId/order/', (req, res) => {
     })
     .filter(Boolean); // drop todos not found in DB
 
-  // only part of todos were in array in body -> add rest to the end
+  // if not all todo.ids were sent along -> add rest to the end
   if (todosBefore.length > todos.length) {
     const notSortedTodos = todosBefore.filter(
       ({ _id }) => !todos.find(todo => todo._id == _id),
@@ -123,6 +124,7 @@ router.put('/:contextId/order/', (req, res) => {
 
   const newContext = req.context;
   newContext.todos = todos;
+  newContext.updatedAt = new Date();
 
   newContext.save(error => {
     if (error) console.error('could not save: ' + error);
@@ -131,7 +133,7 @@ router.put('/:contextId/order/', (req, res) => {
 });
 
 // change single todo
-router.put('/:contextId/:todoId', (req, res, next) => {
+router.put('/:contextId/:todoId', (req, res) => {
   const newContext = req.context;
   let changedTodo;
 
@@ -144,6 +146,8 @@ router.put('/:contextId/:todoId', (req, res, next) => {
     }
     return todo;
   });
+
+  newContext.updatedAt = new Date();
 
   newContext.save(error => {
     if (error) console.error('could not save: ' + error);

@@ -10,11 +10,12 @@ const TodoSchema = new mongoose.Schema({
 const ContextSchema = new mongoose.Schema({
   label: String,
   archived: { type: Boolean, default: false },
+  updatedAt: { type: Date, default: Date.now },
   todos: [TodoSchema],
 });
 
 ContextSchema.method('addTodo', function(todo, callback) {
-  Object.assign(this, { todos: [...this.todos, todo] });
+  Object.assign(this, { todos: [...this.todos, todo], updatedAt: new Date() });
   this.save(callback);
 });
 
