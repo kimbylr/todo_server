@@ -6,24 +6,7 @@ const Context = require('./models').Context;
 const mapContext = require('./helpers').mapContext;
 const mapTodo = require('./helpers').mapTodo;
 
-require('dotenv').config();
-const secret = process.env.FRONTEND_PASSPHRASE;
-
-// very basic security is enough in this case
-router.use((req, res, next) => {
-  console.log('authstring: ' + req.headers.authorization);
-  if (secret === req.headers.authorization) {
-    console.log('secret stimmt überein');
-    next();
-  } else {
-    console.log('secret stimmt nicht überein');
-    const err = new Error('No permission');
-    err.status = 401;
-    next(err);
-  }
-});
-
-// executed when "id" parameter (-> put)
+// if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
   Context.findById(req.params.contextId, (error, context) => {
     if (error) return next(error);
@@ -90,21 +73,6 @@ router.delete('/:contextId', (req, res, next) => {
   });
 });
 
-// create new todo
-router.post('/:contextId', (req, res) => {
-  if (!req.body.content) {
-    const err = new Error('no content provided.');
-    next(err);
-  }
-
-  const { content, context } = req.body;
-  const newTodo = new Todo({ content, context });
-  req.context.addTodo(newTodo, (error, result) => {
-    if (error) console.error('saving todo failed: ' + error);
-    res.json(mapTodo(newTodo));
-  });
-});
-
 // change order
 router.put('/:contextId/order/', (req, res) => {
   const todosBefore = req.context.todos;
@@ -129,6 +97,21 @@ router.put('/:contextId/order/', (req, res) => {
   newContext.save(error => {
     if (error) console.error('could not save: ' + error);
     res.json(mapContext(newContext));
+  });
+});
+
+// create new todo
+router.post('/:contextId', (req, res) => {
+  if (!req.body.content) {
+    const err = new Error('no content provided.');
+    next(err);
+  }
+
+  const { content, context } = req.body;
+  const newTodo = new Todo({ content, context });
+  req.context.addTodo(newTodo, (error, result) => {
+    if (error) console.error('saving todo failed: ' + error);
+    res.json(mapTodo(newTodo));
   });
 });
 
