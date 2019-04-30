@@ -1,0 +1,7 @@
+runtime: nodejs10
+
+env_variables:
+  DB_HOST: 'url.com/ztond'
+  DB_USER: 'me'
+  DB_PASS: 'pw'
+  FRONTEND_PASSPHRASE: 'pw'
