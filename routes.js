@@ -107,8 +107,8 @@ router.post('/:contextId', (req, res) => {
     next(err);
   }
 
-  const { content, context } = req.body;
-  const newTodo = new Todo({ content, context });
+  const { content, link } = req.body;
+  const newTodo = new Todo({ content, link });
   req.context.addTodo(newTodo, (error, result) => {
     if (error) console.error('saving todo failed: ' + error);
     res.json(mapTodo(newTodo));
@@ -122,8 +122,10 @@ router.put('/:contextId/:todoId', (req, res) => {
 
   newContext.todos.map(todo => {
     if (String(todo._id) === req.params.todoId) {
-      if (req.body.content) todo.content = req.body.content;
-      if (req.body.completed !== undefined) todo.completed = req.body.completed;
+      const { content, link, completed } = req.body;
+      if (content) todo.content = content;
+      if (link || link === null) todo.link = link;
+      if (completed !== undefined) todo.completed = completed;
       changedTodo = Object.assign(todo, { updatedAt: new Date() });
       return changedTodo;
     }

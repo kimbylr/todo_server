@@ -1,6 +1,6 @@
 const mapTodo = todo => {
-  const { _id: id, content, completed, updatedAt } = todo;
-  return { id, content, completed, updatedAt };
+  const { _id: id, content, link, completed, updatedAt } = todo;
+  return { id, content, link, completed, updatedAt };
 };
 
 const mapContext = context => {

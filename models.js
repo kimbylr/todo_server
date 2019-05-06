@@ -3,6 +3,7 @@ mongoose.Promise = global.Promise;
 
 const TodoSchema = new mongoose.Schema({
   content: String,
+  link: String,
   updatedAt: { type: Date, default: Date.now },
   completed: { type: Boolean, default: false },
 });
