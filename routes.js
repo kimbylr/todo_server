@@ -10,6 +10,7 @@ const mapTodo = require('./helpers').mapTodo;
 router.param('contextId', (req, res, next, id) => {
   Context.findById(req.params.contextId, (error, context) => {
     if (error) return next(error);
+
     if (!context) {
       error = new Error('Not found');
       error.status = 404;
@@ -41,7 +42,11 @@ router.post(
   (req, res) => {
     const newContext = new Context({ label: req.body.label });
     newContext.save(error => {
-      if (error) console.error('creating context failed: ' + error);
+      if (error) {
+        console.error('creating context failed: ' + error);
+        return next(error);
+      }
+
       res.json(mapContext(newContext));
     });
   },
@@ -58,7 +63,11 @@ router.put('/:contextId', (req, res, next) => {
   newContext.label = req.body.label;
   newContext.updatedAt = new Date();
   newContext.save(error => {
-    if (error) console.error('could not save: ' + error);
+    if (error) {
+      console.error('could not save: ' + error);
+      return next(error);
+    }
+
     res.json(mapContext(newContext));
   });
 });
@@ -68,7 +77,11 @@ router.delete('/:contextId', (req, res, next) => {
   const newContext = req.context;
   newContext.archived = true;
   newContext.save(error => {
-    if (error) console.error('could not flag as archived: ' + error);
+    if (error) {
+      console.error('could not flag as archived: ' + error);
+      return next(error);
+    }
+
     res.json(newContext._id);
   });
 });
@@ -95,7 +108,11 @@ router.put('/:contextId/order/', (req, res) => {
   newContext.updatedAt = new Date();
 
   newContext.save(error => {
-    if (error) console.error('could not save: ' + error);
+    if (error) {
+      console.error('could not save: ' + error);
+      return next(error);
+    }
+
     res.json(mapContext(newContext));
   });
 });
@@ -110,7 +127,11 @@ router.post('/:contextId', (req, res) => {
   const { content, link } = req.body;
   const newTodo = new Todo({ content, link });
   req.context.addTodo(newTodo, (error, result) => {
-    if (error) console.error('saving todo failed: ' + error);
+    if (error) {
+      console.error('saving todo failed: ' + error);
+      return next(error);
+    }
+
     res.json(mapTodo(newTodo));
   });
 });
@@ -135,7 +156,11 @@ router.put('/:contextId/:todoId', (req, res) => {
   newContext.updatedAt = new Date();
 
   newContext.save(error => {
-    if (error) console.error('could not save: ' + error);
+    if (error) {
+      console.error('could not save: ' + error);
+      return next(error);
+    }
+
     res.json(mapTodo(changedTodo));
   });
 });
