@@ -87,7 +87,7 @@ router.delete('/:contextId', (req, res, next) => {
 });
 
 // change order
-router.put('/:contextId/order/', (req, res) => {
+router.put('/:contextId/order/', (req, res, next) => {
   const todosBefore = req.context.todos;
   let todos = req.body
     .map(id => {
@@ -118,7 +118,7 @@ router.put('/:contextId/order/', (req, res) => {
 });
 
 // create new todo
-router.post('/:contextId', (req, res) => {
+router.post('/:contextId', (req, res, next) => {
   if (!req.body.content) {
     const err = new Error('no content provided.');
     next(err);
@@ -137,7 +137,7 @@ router.post('/:contextId', (req, res) => {
 });
 
 // change single todo
-router.put('/:contextId/:todoId', (req, res) => {
+router.put('/:contextId/:todoId', (req, res, next) => {
   const newContext = req.context;
   let changedTodo;
 
