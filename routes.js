@@ -47,11 +47,7 @@ router.post(
         return next(error);
       }
 
-      try {
-        res.json(mapContext(newContext));
-      } catch (e) {
-        return next(e);
-      }
+      res.json(mapContext(newContext));
     });
   },
 );
@@ -72,11 +68,7 @@ router.put('/:contextId', (req, res, next) => {
       return next(error);
     }
 
-    try {
-      res.json(mapContext(newContext));
-    } catch (e) {
-      return next(e);
-    }
+    res.json(mapContext(newContext));
   });
 });
 
@@ -121,11 +113,7 @@ router.put('/:contextId/order/', (req, res, next) => {
       return next(error);
     }
 
-    try {
-      res.json(mapContext(newContext));
-    } catch (e) {
-      return next(e);
-    }
+    res.json(mapContext(newContext));
   });
 });
 
@@ -144,11 +132,7 @@ router.post('/:contextId', (req, res, next) => {
       return next(error);
     }
 
-    try {
-      res.json(mapTodo(newTodo));
-    } catch (e) {
-      return next(e);
-    }
+    res.json(mapTodo(newTodo));
   });
 });
 
@@ -170,6 +154,11 @@ router.put('/:contextId/:todoId', (req, res, next) => {
     return todo;
   });
 
+  if (!changedTodo) {
+    console.error('todo to change not found');
+    next(new Error('todo to change not found'));
+  }
+
   newContext.updatedAt = new Date();
 
   newContext.save(error => {
@@ -178,11 +167,7 @@ router.put('/:contextId/:todoId', (req, res, next) => {
       return next(error);
     }
 
-    try {
-      res.json(mapTodo(changedTodo));
-    } catch (e) {
-      return next(e);
-    }
+    res.json(mapTodo(changedTodo));
   });
 });
 
