@@ -3,8 +3,8 @@ const router = express.Router();
 const Todo = require('./models').Todo;
 const Context = require('./models').Context;
 
-const mapContext = require('./helpers').mapContext;
-const mapTodo = require('./helpers').mapTodo;
+const { mapContext } = require('./helpers');
+const { mapTodo } = require('./helpers');
 
 // if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
@@ -47,7 +47,11 @@ router.post(
         return next(error);
       }
 
-      res.json(mapContext(newContext));
+      try {
+        res.json(mapContext(newContext));
+      } catch (e) {
+        return next(e);
+      }
     });
   },
 );
@@ -68,7 +72,11 @@ router.put('/:contextId', (req, res, next) => {
       return next(error);
     }
 
-    res.json(mapContext(newContext));
+    try {
+      res.json(mapContext(newContext));
+    } catch (e) {
+      return next(e);
+    }
   });
 });
 
@@ -113,7 +121,11 @@ router.put('/:contextId/order/', (req, res, next) => {
       return next(error);
     }
 
-    res.json(mapContext(newContext));
+    try {
+      res.json(mapContext(newContext));
+    } catch (e) {
+      return next(e);
+    }
   });
 });
 
@@ -132,7 +144,11 @@ router.post('/:contextId', (req, res, next) => {
       return next(error);
     }
 
-    res.json(mapTodo(newTodo));
+    try {
+      res.json(mapTodo(newTodo));
+    } catch (e) {
+      return next(e);
+    }
   });
 });
 
@@ -147,9 +163,10 @@ router.put('/:contextId/:todoId', (req, res, next) => {
       if (content) todo.content = content;
       if (link || link === null) todo.link = link;
       if (completed !== undefined) todo.completed = completed;
-      changedTodo = Object.assign(todo, { updatedAt: new Date() });
+      changedTodo = { ...todo, updatedAt: new Date() };
       return changedTodo;
     }
+
     return todo;
   });
 
@@ -161,7 +178,11 @@ router.put('/:contextId/:todoId', (req, res, next) => {
       return next(error);
     }
 
-    res.json(mapTodo(changedTodo));
+    try {
+      res.json(mapTodo(changedTodo));
+    } catch (e) {
+      return next(e);
+    }
   });
 });
 
