@@ -147,7 +147,7 @@ router.put('/:contextId/:todoId', (req, res, next) => {
       if (content) todo.content = content;
       if (link || link === null) todo.link = link;
       if (completed !== undefined) todo.completed = completed;
-      changedTodo = { ...todo, updatedAt: new Date() };
+      changedTodo = Object.assign(todo, { updatedAt: new Date() });
       return changedTodo;
     }
 
