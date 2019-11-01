@@ -3,13 +3,14 @@ const router = express.Router();
 const Todo = require('./models').Todo;
 const Context = require('./models').Context;
 
-const mapContext = require('./helpers').mapContext;
-const mapTodo = require('./helpers').mapTodo;
+const { mapContext } = require('./helpers');
+const { mapTodo } = require('./helpers');
 
 // if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
   Context.findById(req.params.contextId, (error, context) => {
     if (error) return next(error);
+
     if (!context) {
       error = new Error('Not found');
       error.status = 404;
@@ -41,7 +42,11 @@ router.post(
   (req, res) => {
     const newContext = new Context({ label: req.body.label });
     newContext.save(error => {
-      if (error) console.error('creating context failed: ' + error);
+      if (error) {
+        console.error('creating context failed: ' + error);
+        return next(error);
+      }
+
       res.json(mapContext(newContext));
     });
   },
@@ -58,7 +63,11 @@ router.put('/:contextId', (req, res, next) => {
   newContext.label = req.body.label;
   newContext.updatedAt = new Date();
   newContext.save(error => {
-    if (error) console.error('could not save: ' + error);
+    if (error) {
+      console.error('could not save: ' + error);
+      return next(error);
+    }
+
     res.json(mapContext(newContext));
   });
 });
@@ -68,13 +77,17 @@ router.delete('/:contextId', (req, res, next) => {
   const newContext = req.context;
   newContext.archived = true;
   newContext.save(error => {
-    if (error) console.error('could not flag as archived: ' + error);
+    if (error) {
+      console.error('could not flag as archived: ' + error);
+      return next(error);
+    }
+
     res.json(newContext._id);
   });
 });
 
 // change order
-router.put('/:contextId/order/', (req, res) => {
+router.put('/:contextId/order/', (req, res, next) => {
   const todosBefore = req.context.todos;
   let todos = req.body
     .map(id => {
@@ -95,13 +108,17 @@ router.put('/:contextId/order/', (req, res) => {
   newContext.updatedAt = new Date();
 
   newContext.save(error => {
-    if (error) console.error('could not save: ' + error);
+    if (error) {
+      console.error('could not save: ' + error);
+      return next(error);
+    }
+
     res.json(mapContext(newContext));
   });
 });
 
 // create new todo
-router.post('/:contextId', (req, res) => {
+router.post('/:contextId', (req, res, next) => {
   if (!req.body.content) {
     const err = new Error('no content provided.');
     next(err);
@@ -110,13 +127,17 @@ router.post('/:contextId', (req, res) => {
   const { content, link } = req.body;
   const newTodo = new Todo({ content, link });
   req.context.addTodo(newTodo, (error, result) => {
-    if (error) console.error('saving todo failed: ' + error);
+    if (error) {
+      console.error('saving todo failed: ' + error);
+      return next(error);
+    }
+
     res.json(mapTodo(newTodo));
   });
 });
 
 // change single todo
-router.put('/:contextId/:todoId', (req, res) => {
+router.put('/:contextId/:todoId', (req, res, next) => {
   const newContext = req.context;
   let changedTodo;
 
@@ -129,13 +150,23 @@ router.put('/:contextId/:todoId', (req, res) => {
       changedTodo = Object.assign(todo, { updatedAt: new Date() });
       return changedTodo;
     }
+
     return todo;
   });
+
+  if (!changedTodo) {
+    console.error('todo to change not found');
+    next(new Error('todo to change not found'));
+  }
 
   newContext.updatedAt = new Date();
 
   newContext.save(error => {
-    if (error) console.error('could not save: ' + error);
+    if (error) {
+      console.error('could not save: ' + error);
+      return next(error);
+    }
+
     res.json(mapTodo(changedTodo));
   });
 });
