@@ -37,6 +37,7 @@ wsServer.on('connection', ws => {
   ws.on('close', () => {
     connections = connections.filter(c => c !== ws);
   });
+  console.log('client opened WebSocket');
   ws.send('connection succeeded');
 });
 httpServer.listen(WS_PORT, () => {
