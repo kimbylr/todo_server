@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Todo = require('./models').Todo;
 const Context = require('./models').Context;
-
-const { mapContext } = require('./helpers');
-const { mapTodo } = require('./helpers');
+const { mapContext, mapTodo, triggerRefresh } = require('./helpers');
 
 // if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
@@ -31,32 +29,29 @@ router.get('/', (req, res, next) => {
 });
 
 // create new context
-router.post(
-  '/context',
-  (req, res, next) => {
-    if (!req.body.label) {
-      const err = new Error('no content provided.');
-      next(err);
-    } else next();
-  },
-  (req, res) => {
-    const newContext = new Context({ label: req.body.label });
-    newContext.save(error => {
-      if (error) {
-        console.error('creating context failed: ' + error);
-        return next(error);
-      }
+router.post('/context', (req, res, next) => {
+  if (!req.body.label) {
+    const err = new Error('no content provided.');
+    return next(err);
+  }
 
-      res.json(mapContext(newContext));
-    });
-  },
-);
+  const newContext = new Context({ label: req.body.label });
+  newContext.save(error => {
+    if (error) {
+      console.error('creating context failed: ' + error);
+      return next(error);
+    }
+
+    res.json(mapContext(newContext));
+    triggerRefresh(req.connections);
+  });
+});
 
 // change context label
 router.put('/:contextId', (req, res, next) => {
   if (!req.body.label) {
     const err = new Error('no content provided.');
-    next(err);
+    return next(err);
   }
 
   const newContext = req.context;
@@ -69,6 +64,7 @@ router.put('/:contextId', (req, res, next) => {
     }
 
     res.json(mapContext(newContext));
+    triggerRefresh(req.connections);
   });
 });
 
@@ -83,6 +79,7 @@ router.delete('/:contextId', (req, res, next) => {
     }
 
     res.json(newContext._id);
+    triggerRefresh(req.connections);
   });
 });
 
@@ -114,6 +111,7 @@ router.put('/:contextId/order/', (req, res, next) => {
     }
 
     res.json(mapContext(newContext));
+    triggerRefresh(req.connections);
   });
 });
 
@@ -121,7 +119,7 @@ router.put('/:contextId/order/', (req, res, next) => {
 router.post('/:contextId', (req, res, next) => {
   if (!req.body.content) {
     const err = new Error('no content provided.');
-    next(err);
+    return next(err);
   }
 
   const { content, link } = req.body;
@@ -133,6 +131,7 @@ router.post('/:contextId', (req, res, next) => {
     }
 
     res.json(mapTodo(newTodo));
+    triggerRefresh(req.connections);
   });
 });
 
@@ -156,7 +155,7 @@ router.put('/:contextId/:todoId', (req, res, next) => {
 
   if (!changedTodo) {
     console.error('todo to change not found');
-    next(new Error('todo to change not found'));
+    return next(new Error('todo to change not found'));
   }
 
   newContext.updatedAt = new Date();
@@ -168,6 +167,7 @@ router.put('/:contextId/:todoId', (req, res, next) => {
     }
 
     res.json(mapTodo(changedTodo));
+    triggerRefresh(req.connections);
   });
 });
 
