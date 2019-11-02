@@ -21,7 +21,7 @@ const mapContext = context => {
 
 const triggerRefresh = (connections = []) => {
   connections.forEach(ws => {
-    ws.readyState && ws.send('refresh');
+    ws.readyState === WebSocket.OPEN && ws.send('refresh');
   });
 };
 
