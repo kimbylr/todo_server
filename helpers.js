@@ -19,9 +19,10 @@ const mapContext = context => {
   };
 };
 
+const WEB_SOCKET_OPEN = 1;
 const triggerRefresh = (connections = []) => {
   connections.forEach(ws => {
-    ws.readyState === WebSocket.OPEN && ws.send('refresh');
+    ws.readyState === WEB_SOCKET_OPEN && ws.send('refresh');
   });
 };
 
