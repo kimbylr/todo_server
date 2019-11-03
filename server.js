@@ -12,9 +12,10 @@ require('./db');
 const app = express();
 
 const PORT = process.env.PORT || 3030;
-const WS_PORT = process.env.WS_PORT || 8999;
 
-app.listen(PORT, () => console.log(`${Date()}\nListening on port ${PORT}.`));
+const server = app.listen(PORT, () =>
+  console.log(`${Date()}\nListening on port ${PORT}.`),
+);
 
 app.use(cors()); // permits all requests
 app.enable('trust proxy'); // trusts the heroku proxy and saves origin ip in req.ip
@@ -30,8 +31,7 @@ app.use((req, res, next) => {
 });
 
 // handle WebSockets
-const httpServer = http.createServer(app);
-const wsServer = new WebSocketServer({ server: httpServer });
+const wsServer = new WebSocketServer({ server });
 wsServer.on('connection', ws => {
   connections = [...connections, ws];
   ws.on('close', () => {
@@ -39,9 +39,6 @@ wsServer.on('connection', ws => {
   });
   console.log('client opened WebSocket');
   ws.send('connection succeeded');
-});
-httpServer.listen(WS_PORT, () => {
-  console.log(`WebSocket server running on port ${httpServer.address().port}.`);
 });
 
 // handle routes
