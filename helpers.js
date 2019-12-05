@@ -1,3 +1,5 @@
+const fetch = require('node-fetch');
+
 const mapTodo = todo => {
   if (!todo) throw Error('got no todo in mapTodo!');
 
@@ -26,4 +28,23 @@ const triggerRefresh = (connections = []) => {
   });
 };
 
-module.exports = { mapContext, mapTodo, triggerRefresh };
+const ECHO_LINK_BASE = 'https://www.srf.ch/play/radio/echo-der-zeit/';
+const resolveLink = async (content, link) => {
+  if (content.startsWith(ECHO_LINK_BASE)) {
+    try {
+      const response = await fetch(content);
+      const body = await response.text();
+      const title = body
+        .split('<title>')[1]
+        .split('</title>')[0]
+        .replace(' - Radio - Play SRF', '');
+      return { content: title, link: content };
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  return { content, link };
+};
+
+module.exports = { mapContext, mapTodo, triggerRefresh, resolveLink };
