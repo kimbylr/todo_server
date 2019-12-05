@@ -6,7 +6,6 @@ const secret = process.env.FRONTEND_PASSPHRASE;
 
 // very basic security is enough in this case
 router.use((req, res, next) => {
-  // console.log('authstring: ' + req.headers.authorization);
   if (secret === req.headers.authorization) {
     console.log('secret stimmt überein');
     next();

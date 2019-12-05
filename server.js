@@ -2,7 +2,6 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 const jsonParser = require('body-parser').json;
-const http = require('http');
 const WebSocketServer = require('ws').Server;
 
 const secret = require('./secret');
@@ -10,9 +9,7 @@ const routes = require('./routes');
 
 require('./db');
 const app = express();
-
 const PORT = process.env.PORT || 3030;
-
 const server = app.listen(PORT, () =>
   console.log(`${Date()}\nListening on port ${PORT}.`),
 );

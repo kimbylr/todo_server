@@ -1,15 +1,4 @@
-# see https://github.com/GoogleCloudPlatform/nodejs-docs-samples/blob/master/appengine/websockets/app.yaml
-# and https://medium.com/google-cloud/a-node-js-websocket-server-on-google-app-engine-c6c32a486e9a
-runtime: nodejs
-env: flex
-
-manual_scaling:
-  instances: 1
-
-network:
-  forwarded_ports:
-    - 8999
-  instance_tag: websockets
+runtime: nodejs10
 
 env_variables:
   DB_HOST: 'url.com/ztond'
