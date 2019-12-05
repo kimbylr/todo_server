@@ -2,7 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Todo = require('./models').Todo;
 const Context = require('./models').Context;
-const { mapContext, mapTodo, triggerRefresh } = require('./helpers');
+const {
+  mapContext,
+  mapTodo,
+  triggerRefresh,
+  resolveLink,
+} = require('./helpers');
 
 // if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
@@ -116,14 +121,15 @@ router.put('/:contextId/order/', (req, res, next) => {
 });
 
 // create new todo
-router.post('/:contextId', (req, res, next) => {
+router.post('/:contextId', async (req, res, next) => {
   if (!req.body.content) {
     const err = new Error('no content provided.');
     return next(err);
   }
 
   const { content, link } = req.body;
-  const newTodo = new Todo({ content, link });
+  const todo = await resolveLink(content, link); // magically resolve echo links
+  const newTodo = new Todo(todo);
   req.context.addTodo(newTodo, (error, result) => {
     if (error) {
       console.error('saving todo failed: ' + error);
