@@ -29,15 +29,18 @@ const triggerRefresh = (connections = []) => {
 };
 
 const ECHO_LINK_BASE = 'https://www.srf.ch/play/radio/echo-der-zeit/';
+const ECHO_PREFIX = 'ECHO: ';
 const resolveLink = async (content, link) => {
   if (content.startsWith(ECHO_LINK_BASE)) {
     try {
       const response = await fetch(content);
       const body = await response.text();
-      const title = body
-        .split('<title>')[1]
-        .split('</title>')[0]
-        .replace(' - Radio - Play SRF', '');
+      const title =
+        ECHO_PREFIX +
+        body
+          .split('<title>')[1]
+          .split('</title>')[0]
+          .replace(' - Radio - Play SRF', '');
       return { content: title, link: content };
     } catch (e) {
       console.error(e);
