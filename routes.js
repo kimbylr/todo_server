@@ -28,6 +28,17 @@ router.get('/', (req, res, next) => {
     .catch(error => next(error));
 });
 
+// get timestamp of last edit
+router.get('/lastedit', (req, res, next) => {
+  Context.find({ archived: false })
+    .sort({ updatedAt: 'desc' })
+    .findOne()
+    .then(context => {
+      res.json(context.updatedAt);
+    })
+    .catch(error => next(error));
+});
+
 // create new context
 router.post('/context', (req, res, next) => {
   if (!req.body.label) {
