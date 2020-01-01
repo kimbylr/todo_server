@@ -2,12 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Todo = require('./models').Todo;
 const Context = require('./models').Context;
-const {
-  mapContext,
-  mapTodo,
-  triggerRefresh,
-  resolveLink,
-} = require('./helpers');
+const { mapContext, mapTodo, resolveLink } = require('./helpers');
 
 // if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
@@ -48,7 +43,6 @@ router.post('/context', (req, res, next) => {
     }
 
     res.json(mapContext(newContext));
-    triggerRefresh(req.connections);
   });
 });
 
@@ -69,7 +63,6 @@ router.put('/:contextId', (req, res, next) => {
     }
 
     res.json(mapContext(newContext));
-    triggerRefresh(req.connections);
   });
 });
 
@@ -84,7 +77,6 @@ router.delete('/:contextId', (req, res, next) => {
     }
 
     res.json(newContext._id);
-    triggerRefresh(req.connections);
   });
 });
 
@@ -116,7 +108,6 @@ router.put('/:contextId/order/', (req, res, next) => {
     }
 
     res.json(mapContext(newContext));
-    triggerRefresh(req.connections);
   });
 });
 
@@ -137,7 +128,6 @@ router.post('/:contextId', async (req, res, next) => {
     }
 
     res.json(mapTodo(newTodo));
-    triggerRefresh(req.connections);
   });
 });
 
@@ -173,7 +163,6 @@ router.put('/:contextId/:todoId', (req, res, next) => {
     }
 
     res.json(mapTodo(changedTodo));
-    triggerRefresh(req.connections);
   });
 });
 

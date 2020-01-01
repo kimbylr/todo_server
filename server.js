@@ -2,7 +2,6 @@ const express = require('express');
 const logger = require('morgan');
 const cors = require('cors');
 const jsonParser = require('body-parser').json;
-const WebSocketServer = require('ws').Server;
 
 const secret = require('./secret');
 const routes = require('./routes');
@@ -19,24 +18,6 @@ app.enable('trust proxy'); // trusts the heroku proxy and saves origin ip in req
 
 app.use(logger('dev'));
 app.use(jsonParser());
-
-// store active WebSockets
-let connections = [];
-app.use((req, res, next) => {
-  req.connections = connections;
-  return next();
-});
-
-// handle WebSockets
-const wsServer = new WebSocketServer({ server });
-wsServer.on('connection', ws => {
-  connections = [...connections, ws];
-  ws.on('close', () => {
-    connections = connections.filter(c => c !== ws);
-  });
-  console.log('client opened WebSocket');
-  ws.send('connection succeeded');
-});
 
 // handle routes
 app.use('/todo', secret);
