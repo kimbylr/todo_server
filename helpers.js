@@ -21,13 +21,6 @@ const mapContext = context => {
   };
 };
 
-const WEB_SOCKET_OPEN = 1;
-const triggerRefresh = (connections = []) => {
-  connections.forEach(ws => {
-    ws.readyState === WEB_SOCKET_OPEN && ws.send('refresh');
-  });
-};
-
 const ECHO_LINK_BASE = 'https://www.srf.ch/play/radio/echo-der-zeit/';
 const ECHO_PREFIX = 'ECHO: ';
 const resolveLink = async (content, link) => {
@@ -50,4 +43,4 @@ const resolveLink = async (content, link) => {
   return { content, link };
 };
 
-module.exports = { mapContext, mapTodo, triggerRefresh, resolveLink };
+module.exports = { mapContext, mapTodo, resolveLink };
