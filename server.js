@@ -9,9 +9,8 @@ const routes = require('./routes');
 require('./db');
 const app = express();
 const PORT = process.env.PORT || 3030;
-const server = app.listen(PORT, () =>
-  console.log(`${Date()}\nListening on port ${PORT}.`),
-);
+
+app.listen(PORT, () => console.log(`${Date()}\nListening on port ${PORT}.`));
 
 app.use(cors()); // permits all requests
 app.enable('trust proxy'); // trusts the heroku proxy and saves origin ip in req.ip
