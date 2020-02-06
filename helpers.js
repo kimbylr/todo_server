@@ -16,8 +16,8 @@ const mapContext = context => {
     label,
     archived,
     id,
+    updatedAt: new Date(updatedAt).getTime(), // Date.parse swallows milliseconds ¯\_(ツ)_/¯
     todos: todos.map(mapTodo),
-    updatedAt: Date.parse(updatedAt),
   };
 };
 
