@@ -15,11 +15,6 @@ const ContextSchema = new mongoose.Schema({
   todos: [TodoSchema],
 });
 
-ContextSchema.method('addTodo', function(todo, callback) {
-  Object.assign(this, { todos: [...this.todos, todo], updatedAt: new Date() });
-  this.save(callback);
-});
-
 // create collection ("todos")
 const Todo = mongoose.model('Todo', TodoSchema);
 const Context = mongoose.model('Context', ContextSchema);
