@@ -133,8 +133,8 @@ router.post('/:contextId', async (req, res, next) => {
 
   try {
     req.context.todos = req.body.prepend
-      ? [todo, ...req.context.todos]
-      : [...req.context.todos, todo];
+      ? [newTodo, ...req.context.todos]
+      : [...req.context.todos, newTodo];
     req.context.updatedAt = new Date();
 
     await req.context.save();
