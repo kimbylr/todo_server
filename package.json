@@ -16,7 +16,7 @@
     "express": "^4.16.2",
     "mongoose": "^4.13.19",
     "morgan": "^1.9.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "nodemon": "^1.12.1",
     "ws": "^7.2.0"
   }
