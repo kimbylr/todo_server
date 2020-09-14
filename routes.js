@@ -22,10 +22,10 @@ router.param('contextId', (req, res, next, id) => {
 // return all active (not archived) contexts + todos
 router.get('/', (req, res, next) => {
   Context.find({ archived: false })
-    .then(contexts => {
+    .then((contexts) => {
       res.json(contexts.map(mapContext));
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 // get timestamp of last edit
@@ -33,10 +33,10 @@ router.get('/lastedit', (req, res, next) => {
   Context.find({ archived: false })
     .sort({ updatedAt: 'desc' })
     .findOne()
-    .then(context => {
+    .then((context) => {
       res.json(context.updatedAt);
     })
-    .catch(error => next(error));
+    .catch((error) => next(error));
 });
 
 // create new context
@@ -47,7 +47,7 @@ router.post('/context', (req, res, next) => {
   }
 
   const newContext = new Context({ label: req.body.label });
-  newContext.save(error => {
+  newContext.save((error) => {
     if (error) {
       console.error('creating context failed: ' + error);
       return next(error);
@@ -67,7 +67,7 @@ router.put('/:contextId', (req, res, next) => {
   const newContext = req.context;
   newContext.label = req.body.label;
   newContext.updatedAt = new Date();
-  newContext.save(error => {
+  newContext.save((error) => {
     if (error) {
       console.error('could not save: ' + error);
       return next(error);
@@ -81,7 +81,7 @@ router.put('/:contextId', (req, res, next) => {
 router.delete('/:contextId', (req, res, next) => {
   const newContext = req.context;
   newContext.archived = true;
-  newContext.save(error => {
+  newContext.save((error) => {
     if (error) {
       console.error('could not flag as archived: ' + error);
       return next(error);
@@ -95,15 +95,13 @@ router.delete('/:contextId', (req, res, next) => {
 router.put('/:contextId/order/', (req, res, next) => {
   const todosBefore = req.context.todos;
   let todos = req.body
-    .map(id => {
-      return todosBefore.find(todo => todo._id == id);
-    })
+    .map((id) => todosBefore.find((todo) => todo._id == id))
     .filter(Boolean); // drop todos not found in DB
 
   // if not all todo.ids were sent along -> add rest to the end
   if (todosBefore.length > todos.length) {
     const notSortedTodos = todosBefore.filter(
-      ({ _id }) => !todos.find(todo => todo._id == _id),
+      ({ _id }) => !todos.find((todo) => todo._id == _id),
     );
     todos = [...todos, ...notSortedTodos];
   }
@@ -112,7 +110,7 @@ router.put('/:contextId/order/', (req, res, next) => {
   newContext.todos = todos;
   newContext.updatedAt = new Date();
 
-  newContext.save(error => {
+  newContext.save((error) => {
     if (error) {
       console.error('could not save: ' + error);
       return next(error);
@@ -132,14 +130,19 @@ router.post('/:contextId', async (req, res, next) => {
   const { content, link } = req.body;
   const todo = await resolveLink(content, link); // magically resolve echo links
   const newTodo = new Todo(todo);
-  req.context.addTodo(newTodo, (error, result) => {
-    if (error) {
-      console.error('saving todo failed: ' + error);
-      return next(error);
-    }
 
+  try {
+    req.context.todos = req.body.prepend
+      ? [newTodo, ...req.context.todos]
+      : [...req.context.todos, newTodo];
+    req.context.updatedAt = new Date();
+
+    await req.context.save();
     res.json(mapTodo(newTodo));
-  });
+  } catch (error) {
+    console.error('saving new todo failed: ' + error);
+    return next(error);
+  }
 });
 
 // change single todo
@@ -147,7 +150,7 @@ router.put('/:contextId/:todoId', (req, res, next) => {
   const newContext = req.context;
   let changedTodo;
 
-  newContext.todos.map(todo => {
+  newContext.todos.map((todo) => {
     if (String(todo._id) === req.params.todoId) {
       const { content, link, completed } = req.body;
       if (content) todo.content = content;
@@ -167,7 +170,7 @@ router.put('/:contextId/:todoId', (req, res, next) => {
 
   newContext.updatedAt = new Date();
 
-  newContext.save(error => {
+  newContext.save((error) => {
     if (error) {
       console.error('could not save: ' + error);
       return next(error);
