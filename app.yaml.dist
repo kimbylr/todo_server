@@ -1,7 +1,8 @@
-runtime: nodejs10
+runtime: nodejs16
 
 env_variables:
   DB_HOST: 'url.com/ztond'
   DB_USER: 'me'
   DB_PASS: 'pw'
   FRONTEND_PASSPHRASE: 'pw'
+  CORS_ORIGIN: 'https://frontend.url'

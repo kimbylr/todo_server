@@ -12,8 +12,7 @@ const PORT = process.env.PORT || 3030;
 
 app.listen(PORT, () => console.log(`${Date()}\nListening on port ${PORT}.`));
 
-app.use(cors()); // permits all requests
-app.enable('trust proxy'); // trusts the heroku proxy and saves origin ip in req.ip
+app.use(cors({ origin: process.env.CORS_ORIGIN }));
 
 app.use(logger('dev'));
 app.use(jsonParser());
