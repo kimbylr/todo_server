@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Todo = require('./models').Todo;
 const Context = require('./models').Context;
-const { mapContext, mapTodo, resolveLink } = require('./helpers');
+const { mapContext, mapTodo } = require('./helpers');
 
 // if id parameter is supplied -> loads context in req.context
 router.param('contextId', (req, res, next, id) => {
@@ -127,9 +127,7 @@ router.post('/:contextId', async (req, res, next) => {
     return next(err);
   }
 
-  const { content, link } = req.body;
-  const todo = await resolveLink(content, link); // magically resolve echo links
-  const newTodo = new Todo(todo);
+  const newTodo = new Todo({ content, link });
 
   try {
     req.context.todos = req.body.prepend
