@@ -122,7 +122,8 @@ router.put('/:contextId/order/', (req, res, next) => {
 
 // create new todo
 router.post('/:contextId', async (req, res, next) => {
-  if (!req.body.content) {
+  const { content, link, prepend } = req.body;
+  if (!content) {
     const err = new Error('no content provided.');
     return next(err);
   }
@@ -130,7 +131,7 @@ router.post('/:contextId', async (req, res, next) => {
   const newTodo = new Todo({ content, link });
 
   try {
-    req.context.todos = req.body.prepend
+    req.context.todos = prepend
       ? [newTodo, ...req.context.todos]
       : [...req.context.todos, newTodo];
     req.context.updatedAt = new Date();
